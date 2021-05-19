@@ -22,6 +22,7 @@ Slice - combines a pointer to a sequence with a length.
   - can get length `s.len`
   - can iterate `for (s) |x, i| {}`
   - get coerce from a pointer to an array `s = &arr` or slice the array directly `s = arr[0..]`
+  - duplicating the slice `var s2 = s` does not copy the data
 - `s: [:X]T` - sequence of T of known length plus sentinel value X after
   - `s[s.len] == X`
   - get from an array `s = &arr` or `s = arr[0..:X]`
