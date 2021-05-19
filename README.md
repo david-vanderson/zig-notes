@@ -4,14 +4,16 @@ In C we use the word "array" for a sequence of same-sized items laid out sequent
 
 Zig has a few different ways of talking about an "array" sequence depending on what the zig compiler and type system knows about it.
 
+## Pointers
 Pointers are split into 2 types:
 - `p: *T` - pointer to a single T, not a sequence
   - can only dereference `p.*`
 - `p: [*]T` - pointer to a sequence of T of unknown length
   - can index `p[i]`
-  - can slice `p[i..n]` or `p[i..]`
+  - can slice `p[i..n]`
   - can pointer math `p + x`
 
+## Slices
 Slice - combines a pointer to a sequence with a length.
 - `s: []T` - sequence of T of known length
   - can index `s[i]`
@@ -19,7 +21,7 @@ Slice - combines a pointer to a sequence with a length.
   - can get pointer `s.ptr` with type `[*]T`
   - can get length `s.len`
   - can iterate `for (s) |x, i| {}`
-  - get from an array `s = &arr` or `s = arr[0..]`
+  - get coerce from a pointer to an array `s = &arr` or slice the array directly `s = arr[0..]`
 - `s: [:X]T` - sequence of T of known length plus sentinel value X after
   - `s[s.len] == X`
   - get from an array `s = &arr` or `s = arr[0..:X]`
@@ -44,13 +46,14 @@ pub fn main() !void {
 }
 ```
 
-
+## Arrays
 Array - similar to a slice but length is known at compile time.
 - `a: [N]T` - sequence of T of length N
   - can index `a[i]`
   - can slice `a[i..n]` or `a[i..]`
   - can get length `a.len`
   - can iterate `for (a) |x, i| {}`
+  - can coerce a pointer to an array to a slice `&a`
 - `a: [N:X]T` - sequence of T of length N plus sentinel value X after
   - `a[a.len] == X`
 
@@ -68,7 +71,7 @@ Array Literals
   - stack allocated zeroed buffer
 
 
-Working with strings
+## Working with strings
 - string literals are type `*const [N:0]u8` (pointer to a constant array of bytes with terminating null byte) for easier interop with C
   - can get array `str.*`
   - can slice `str[i..n:0]` gives type `[:0]const u8`
