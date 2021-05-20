@@ -21,11 +21,10 @@ Slice - combines a pointer to a sequence with a length.
   - can get pointer `s.ptr` with type `[*]T`
   - can get length `s.len`
   - can iterate `for (s) |x, i| {}`
-  - get coerce from a pointer to an array `s = &arr` or slice the array directly `s = arr[0..]`
+  - can get by coercing from a pointer to an array `s = &arr` or `s = arr[0..]`
   - duplicating the slice `var s2 = s` does not copy the data
 - `s: [:X]T` - sequence of T of known length plus sentinel value X after
   - `s[s.len] == X`
-  - get from an array `s = &arr` or `s = arr[0..:X]`
   - use for string interop with C
 
 Slices are used in most of the places you would normally have an "array" in C.  They combine pointer and length so you don't need a separate variable.
@@ -33,6 +32,8 @@ Slices are used in most of the places you would normally have an "array" in C.  
 Allocating memory returns a slice:
 - `var s: []T = allocator.alloc(T, n)`
 - `var s: [:X]T = allocator.allocSentinel(T, n, X)`
+
+A struct with a slice field only holds the slice pointer and length.  The pointed-to data is not stored in the memory of the struct.
 
 Experimenting with slices can be confusing if you are starting with arrays.  Try starting with this:
 ```
@@ -48,13 +49,16 @@ pub fn main() !void {
 ```
 
 ## Arrays
-Array - similar to a slice but length is known at compile time.
+Array - similar to a slice but length is known at compile time.  A pointer to an array is very similar to a slice and can be coerced to a slice.
 - `a: [N]T` - sequence of T of length N
   - can index `a[i]`
-  - can slice `a[i..n]` or `a[i..]`
   - can get length `a.len`
   - can iterate `for (a) |x, i| {}`
-  - can coerce a pointer to an array to a slice `&a`
+  - can slice `a[i..n]` or `a[i..]`
+    - this gives a pointer to an array, not a slice type
+    - can coerce a pointer to an array to a slice `s: []T = &a`
+  - can copy data from another array `a[1..3].* = b[2..5].*`
+    - the slice operation returns a pointer to a an array which requires the pointer dereference
 - `a: [N:X]T` - sequence of T of length N plus sentinel value X after
   - `a[a.len] == X`
 
@@ -70,6 +74,8 @@ Array Literals
   - use with `std.fmt.bufPrint` and `std.fmt.bufPrintZ` to create strings at runtime
 - `var buf = std.mem.zeroes([100:0]u8);`
   - stack allocated zeroed buffer
+
+A struct with an array field holds all the array elements in the memory of the struct.
 
 
 ## Working with strings
