@@ -15,9 +15,13 @@ Pointers are split into 2 types:
 
 ## Slices
 Slice - combines a pointer to a sequence with a length.
-- `s: []T` - sequence of T of known length
+- `s: []T` - sequence of T of runtime-known length
   - can index `s[i]`
   - can slice `s[i..n]` or `s[i..]`
+    - if slice length is comptime-known, returns a pointer to an array (coerces to a slice)
+    - if slice length is runtime-known, returns a slice
+  - can copy data from another slice `s[i..n][1..3].* = b[j..m][2..5].*`
+    - slice length must be comptime-known, giving a pointer to an array which requires the pointer dereference
   - can get pointer `s.ptr` with type `[*]T`
   - can get length `s.len`
   - can iterate `for (s) |x, i| {}`
@@ -55,10 +59,10 @@ Array - similar to a slice but length is known at compile time.  A pointer to an
   - can get length `a.len`
   - can iterate `for (a) |x, i| {}`
   - can slice `a[i..n]` or `a[i..]`
-    - this gives a pointer to an array, not a slice type
-    - can coerce a pointer to an array to a slice `s: []T = &a`
+    - if slice length is comptime-known, returns a pointer to an array (coerces to a slice)
+    - if slice length is runtime-known, returns a slice
   - can copy data from another array `a[1..3].* = b[2..5].*`
-    - the slice operation returns a pointer to a an array which requires the pointer dereference
+    - slice length must be comptime-known, giving a pointer to an array which requires the pointer dereference
 - `a: [N:X]T` - sequence of T of length N plus sentinel value X after
   - `a[a.len] == X`
 
