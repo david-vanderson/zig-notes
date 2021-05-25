@@ -15,6 +15,14 @@ Pointers are split into 2 types:
 
 ## Slices
 Slice - combines a pointer to a sequence with a length.
+`[]T`
+is very much like
+```
+struct {
+  ptr: [*]T,
+  len: usize,
+}
+```
 - `s: []T` - sequence of T of runtime-known length
   - can index `s[i]`
   - can slice `s[i..n]` or `s[i..]`
